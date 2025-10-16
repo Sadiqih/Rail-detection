@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X-TRAGO YOLO Stream</title>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #050a13;
+      overflow: hidden;
+    }
+
+    #stream {
+      width: 80%;
+      max-width: 1000px;
+      border-radius: 16px;
+      border: 2px solid rgba(0, 174, 255, 0.9);
+      box-shadow:
+        0 0 15px rgba(0, 174, 255, 0.6),
+        0 0 30px rgba(0, 174, 255, 0.4),
+        0 0 45px rgba(0, 174, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    #stream:hover {
+      box-shadow:
+        0 0 25px rgba(0, 174, 255, 0.9),
+        0 0 50px rgba(0, 174, 255, 0.7),
+        0 0 75px rgba(0, 174, 255, 0.4);
+      transform: scale(1.02);
+    }
+  </style>
+</head>
+<body>
+  <img id="stream" src="" alt="Menunggu video YOLOv8..." />
+
+  <script>
+    const options = {
+      username: "intelligent",
+      password: "Penem2018",
+      reconnectPeriod: 2000,
+    };
+
+    const client = mqtt.connect("wss://f89f938116df4dee81d5215df5ba4782.s1.eu.hivemq.cloud:8884/mqtt", options);
+
+    client.on("connect", () => {
+      console.log("✅ MQTT Connected");
+      client.subscribe("yolo/frame");
+    });
+
+    client.on("message", (topic, message) => {
+      const data = JSON.parse(message.toString());
+      if (data.image) {
+        document.getElementById("stream").src = "data:image/jpeg;base64," + data.image;
+      }
+    });
+  </script>
+</body>
+</html>
